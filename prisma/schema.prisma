@@ -13,6 +13,7 @@ datasource db {
 model User {
   id         String   @id @default(uuid())
   name       String
+  email      String   @unique
   avatar_url String?
   created_at DateTime @default(now())
 
@@ -99,4 +100,13 @@ model Session {
   user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }

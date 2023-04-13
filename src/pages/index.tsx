@@ -16,12 +16,18 @@ import githubIcon from '../../public/assets/images/github-icon.png'
 import rocketIcon from '../../public/assets/images/rocket-icon.png'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { getSession, signIn } from 'next-auth/react'
+import { GetServerSidePropsContext } from 'next'
 
 export default function Home() {
   const router = useRouter()
 
   function handleInicio() {
     router.push('/inicio')
+  }
+
+  async function handleSignIn(provider: string) {
+    return signIn(provider)
   }
   return (
     <Container>
@@ -39,11 +45,11 @@ export default function Home() {
             <p>Faça seu login ou acesse como visitante.</p>
           </LoginInfo>
           <ButtonContainer>
-            <Button type="button">
+            <Button type="button" onClick={() => handleSignIn('google')}>
               <Image src={googleIcon} alt="Ícone do google" />
               <span>Entrar com o Google</span>
             </Button>
-            <Button type="button">
+            <Button type="button" onClick={() => handleSignIn('github')}>
               <Image src={githubIcon} alt="Ícone do github" />
               <span>Entrar com o GitHub</span>
             </Button>
@@ -56,4 +62,20 @@ export default function Home() {
       </LoginContainer>
     </Container>
   )
+}
+
+export async function getServerSideProps({ req }: GetServerSidePropsContext) {
+  const session = await getSession({ req })
+  console.log(session)
+  if (session) {
+    return {
+      redirect: {
+        destination: '/inicio',
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: {},
+  }
 }
