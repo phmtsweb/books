@@ -1,16 +1,28 @@
+import { AppWrapper } from '@/components/AppWrapper'
 import { FontsWrapper } from '@/components/FontsWrapper'
+import { globalStyles } from '@/styles/global'
 import type { AppProps } from 'next/app'
 import { Nunito } from 'next/font/google'
+import { SessionProvider } from 'next-auth/react'
 
 const nunito = Nunito({
   subsets: ['latin'],
   weight: ['400', '700'],
 })
 
-export default function App({ Component, pageProps }: AppProps) {
+globalStyles()
+
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
-    <FontsWrapper font={nunito}>
-      <Component {...pageProps} />
-    </FontsWrapper>
+    <SessionProvider session={session}>
+      <FontsWrapper font={nunito}>
+        <AppWrapper>
+          <Component {...pageProps} />
+        </AppWrapper>
+      </FontsWrapper>
+    </SessionProvider>
   )
 }
