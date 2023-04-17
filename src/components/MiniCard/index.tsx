@@ -13,11 +13,12 @@ type MiniCardProps = {
     image_url: string
   }
   rating: number
+  handleClick?: () => void
 }
 
-export function MiniCard({ book, rating }: MiniCardProps) {
+export function MiniCard({ book, rating, handleClick }: MiniCardProps) {
   return (
-    <Container>
+    <Container onClick={handleClick} clickable={handleClick !== undefined}>
       <StyledImage
         src={book.image_url.replace('public', '').replace('jpg', 'png')}
         alt={book.title}

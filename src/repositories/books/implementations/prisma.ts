@@ -8,7 +8,19 @@ export class BookPrismaRepository implements IBookRepository {
         id,
       },
       include: {
-        ratings: true,
+        ratings: {
+          orderBy: {
+            created_at: 'desc',
+          },
+          include: {
+            user: true,
+          },
+        },
+        categories: {
+          include: {
+            category: true,
+          },
+        },
       },
     })
 
@@ -22,6 +34,19 @@ export class BookPrismaRepository implements IBookRepository {
       author: book.author,
       description: book.summary,
       image_url: book.cover_url,
+      pages: book.total_pages,
+      categories: book.categories.map((category) => category.category.name),
+      avaliations: book.ratings.map((rating) => ({
+        id: rating.id,
+        user: {
+          id: rating.user.id,
+          name: rating.user.name,
+          avatar_url: rating.user.avatar_url!,
+        },
+        rating: rating.rate,
+        comment: rating.description,
+        created_at: rating.created_at.toISOString(),
+      })),
       rating:
         book.ratings.reduce((acc, rating) => acc + rating.rate, 0) /
         book.ratings.length,

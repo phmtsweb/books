@@ -17,6 +17,7 @@ import { Category } from '@/repositories/categories'
 import { Book } from '@/repositories/books'
 import { ActiveTagList } from '@/components/ActiveTagList'
 import { MiniCard } from '@/components/MiniCard'
+import { ModalBookDetail } from '@/components/ModalBookDetail'
 
 type ExplorarProps = {
   tags: Category[]
@@ -38,11 +39,19 @@ export default function Explorar({ tags, books, activeTagId }: ExplorarProps) {
 
   const [booksPage, setBooksPage] = useState<Book[]>(() => books)
 
+  const [bookDetailId, setBookDetailId] = useState('')
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+
   const firstRender = useRef(true)
 
   const handleActiveTag = useCallback((tag: ActiveTagProps) => {
     setActiveTag(tag)
   }, [])
+
+  const handleBookDetail = (bookId: string) => {
+    setBookDetailId(bookId)
+    setModalIsOpen(true)
+  }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value)
@@ -98,6 +107,7 @@ export default function Explorar({ tags, books, activeTagId }: ExplorarProps) {
             {booksPage.map((book) => (
               <MiniCard
                 key={book.id}
+                handleClick={() => handleBookDetail(book.id)}
                 book={{
                   title: book.title,
                   author: book.author,
@@ -109,6 +119,11 @@ export default function Explorar({ tags, books, activeTagId }: ExplorarProps) {
           </CardGridContainer>
         </MainContent>
       </MainContainer>
+      <ModalBookDetail
+        bookId={bookDetailId}
+        isOpen={modalIsOpen}
+        handleClose={() => setModalIsOpen(false)}
+      />
     </Container>
   )
 }

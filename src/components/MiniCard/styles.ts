@@ -10,6 +10,16 @@ export const Container = styled('div', {
   padding: '$4 $5',
   borderRadius: '$md',
   gap: '$5',
+  variants: {
+    clickable: {
+      true: {
+        cursor: 'pointer',
+      },
+      false: {
+        curson: 'default',
+      },
+    },
+  },
 })
 
 export const StyledImage = styled(Image, {

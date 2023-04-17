@@ -1,7 +1,42 @@
 import { prisma } from '@/lib/prisma'
-import { IRatingRepository, Rating } from '..'
+import { IRatingRepository, Rating, RatingDTO } from '..'
 
 export class RatingPrismaRepository implements IRatingRepository {
+  async createRating(rating: RatingDTO): Promise<Rating> {
+    const newRating = await prisma.rating.create({
+      data: {
+        rate: rating.rating,
+        description: rating.comment,
+        book: {
+          connect: { id: rating.bookId },
+        },
+        user: {
+          connect: { id: rating.userId },
+        },
+      },
+      include: {
+        book: true,
+        user: true,
+      },
+    })
+
+    return {
+      id: newRating.id,
+      rating: newRating.rate,
+      created_at: newRating.created_at.toISOString(),
+      book: {
+        title: newRating.book?.name,
+        author: newRating.book?.author,
+        description: newRating.book?.summary,
+        image_url: newRating.book?.cover_url,
+      },
+      user: {
+        name: newRating.user?.name,
+        avatar_url: newRating.user?.avatar_url!,
+      },
+    }
+  }
+
   async findRatingById(id: string): Promise<Rating | null> {
     const rating = await prisma.rating.findUnique({
       where: {
