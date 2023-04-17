@@ -9,6 +9,18 @@ export const globalStyles = globalCss({
   body: {
     backgroundColor: '$gray800',
     color: '$gray200',
+
+    '&::-webkit-scrollbar': {
+      width: 8,
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '$gray800',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '$gray600',
+      borderRadius: '$full',
+      border: 'none',
+    },
   },
   'input, select, textarea': {
     outline: 'none',

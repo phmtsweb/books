@@ -26,6 +26,7 @@ export const {
       7: '1.75rem',
       8: '2rem',
       10: '2.5rem',
+      11: '3.25rem',
     },
 
     fontSizes: {

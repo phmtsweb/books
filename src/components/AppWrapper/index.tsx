@@ -7,7 +7,7 @@ type AppWrapperProps = {
 
 const StyledAppWrapper = styled('main', {
   width: '100%',
-  height: '100vh',
+  minHeight: '100vh',
   maxWidth: 1440,
   margin: '0 auto',
   padding: '$4',
