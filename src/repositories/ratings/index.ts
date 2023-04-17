@@ -14,8 +14,16 @@ export interface Rating {
   }
 }
 
+export interface RatingDTO {
+  rating: number
+  bookId: string
+  userId: string
+  comment: string
+}
+
 export interface IRatingRepository {
   findRatingById(id: string): Promise<Rating | null>
   getAllRatings(): Promise<Rating[]>
   getLastBetterRatings(last?: number): Promise<Rating[]>
+  createRating(rating: RatingDTO): Promise<Rating>
 }

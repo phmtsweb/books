@@ -7,6 +7,19 @@ export interface Book {
   description: string
   image_url: string
   rating: number
+  pages?: number
+  categories?: string[]
+  avaliations?: {
+    id: string
+    user: {
+      id: string
+      name: string
+      avatar_url: string
+    }
+    rating: number
+    comment: string
+    created_at: string
+  }[]
 }
 
 export interface Review {

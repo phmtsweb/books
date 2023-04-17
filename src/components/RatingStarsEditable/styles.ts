@@ -5,4 +5,5 @@ export const RatingStarsContainer = styled('div', {
   gap: '$1',
   alignItems: 'center',
   color: '$purple100 !important',
+  cursor: 'pointer',
 })

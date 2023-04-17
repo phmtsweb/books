@@ -1,3 +1,4 @@
+import React from 'react'
 import { Star, StarHalf } from '@phosphor-icons/react'
 import { RatingStarsContainer } from './styles'
 import cte from '../../constants'
@@ -14,15 +15,15 @@ export function RatingStars({
   const stars = Array.from({ length: size }, (_, index) => {
     const starIndex = index + 0.55
     return (
-      <span key={index}>
+      <React.Fragment key={index}>
         {rating >= starIndex ? (
-          <Star size={16} weight="fill" />
+          <Star key={index} size={16} weight="fill" />
         ) : rating > index ? (
-          <StarHalf size={16} weight="fill" />
+          <StarHalf key={index} size={16} weight="fill" />
         ) : (
-          <Star size={16} />
+          <Star key={index} size={16} />
         )}
-      </span>
+      </React.Fragment>
     )
   })
   return (
