@@ -66,7 +66,7 @@ export default function Home() {
 
 export async function getServerSideProps({ req }: GetServerSidePropsContext) {
   const session = await getSession({ req })
-  console.log(session)
+  // console.log(session)
   if (session) {
     return {
       redirect: {
