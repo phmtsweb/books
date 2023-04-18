@@ -1,7 +1,7 @@
 import { AvatarContainer, AvatarImage } from './styles'
 
 type AvatarProps = {
-  size?: 'small' | 'medium' | 'large'
+  size?: 'small' | 'medium' | 'large' | 'xlarge'
   url: string
 }
 

@@ -6,4 +6,6 @@ export const TYPES = {
   RatingRepository2: 'RatingRepository2',
   CategoryRepository: 'CategoryRepository',
   CreateRatingUseCase: 'CreateRatingUseCase',
+  LoadByUserIdUseCase: 'LoadByUserIdUseCase',
+  GetUserByIdUseCase: 'GetUserByIdUseCase',
 }

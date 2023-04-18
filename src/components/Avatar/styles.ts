@@ -21,6 +21,10 @@ export const AvatarContainer = styled('div', {
         width: 58,
         height: 58,
       },
+      xlarge: {
+        width: 74,
+        height: 74,
+      },
     },
   },
 })
@@ -40,6 +44,10 @@ export const AvatarImage = styled(Image, {
       large: {
         width: 56,
         height: 56,
+      },
+      xlarge: {
+        width: 72,
+        height: 72,
       },
     },
   },

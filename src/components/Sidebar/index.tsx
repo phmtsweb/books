@@ -69,7 +69,7 @@ export function Sidebar() {
             <Avatar url={avatarUrl} size="small" />
             {name}
             <SignOut
-              size={20}
+              size={24}
               color="#F75A68"
               onClick={() => signOut({ callbackUrl: '/' })}
               style={{ cursor: 'pointer' }}
