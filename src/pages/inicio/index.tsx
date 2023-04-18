@@ -24,6 +24,7 @@ type Rating = {
     image_url: string
   }
   user?: {
+    id: string
     name: string
     avatar_url: string
   }
@@ -49,6 +50,7 @@ export default function Inicio({ ratings }: InicioProps) {
               <Card
                 key={rating.id}
                 user={{
+                  id: rating.user?.id || '',
                   name: rating.user?.name || '',
                   avatar_url: rating.user?.avatar_url || '',
                 }}
@@ -80,6 +82,6 @@ export async function getStaticProps() {
       ratings,
     },
 
-    revalidate: 60, // 1 minute
+    revalidate: 1, // 1 minute
   }
 }

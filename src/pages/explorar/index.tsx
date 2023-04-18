@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useState, useEffect, startTransition } from 'react'
 import { Sidebar } from '@/components/Sidebar'
 import {
   CardGridContainer,
@@ -18,11 +18,14 @@ import { Book } from '@/repositories/books'
 import { ActiveTagList } from '@/components/ActiveTagList'
 import { MiniCard } from '@/components/MiniCard'
 import { ModalBookDetail } from '@/components/ModalBookDetail'
+import useSWR, { SWRConfig } from 'swr'
 
 type ExplorarProps = {
   tags: Category[]
-  books: Book[]
   activeTagId: string
+  fallback: {
+    [key: string]: Book[]
+  }
 }
 
 type ActiveTagProps = {
@@ -30,19 +33,20 @@ type ActiveTagProps = {
   name: string | undefined
 }
 
-export default function Explorar({ tags, books, activeTagId }: ExplorarProps) {
+export default function Explorar({
+  tags,
+  activeTagId,
+  fallback,
+}: ExplorarProps) {
   const [activeTag, setActiveTag] = useState<ActiveTagProps>({
     id: activeTagId,
     name: undefined,
   })
+  const [showData, setShowData] = useState(true)
   const [search, setSearch] = useState('')
-
-  const [booksPage, setBooksPage] = useState<Book[]>(() => books)
 
   const [bookDetailId, setBookDetailId] = useState('')
   const [modalIsOpen, setModalIsOpen] = useState(false)
-
-  const firstRender = useRef(true)
 
   const handleActiveTag = useCallback((tag: ActiveTagProps) => {
     setActiveTag(tag)
@@ -54,77 +58,88 @@ export default function Explorar({ tags, books, activeTagId }: ExplorarProps) {
   }
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value)
     setSearch(e.target.value)
   }
 
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false
-      return
+    if (search) {
+      startTransition(() => {
+        setShowData(false)
+      })
+
+      const timeoutId = setTimeout(() => {
+        setShowData(true)
+      }, 500)
+
+      return () => {
+        if (!search) clearTimeout(timeoutId)
+      }
     }
-    ;(async () => {
-      let url = '/api/books/load'
-      if (activeTag.id !== 'Tudo') {
-        url += `?tag=${activeTag.id}`
-      }
-      if (search) {
-        url +=
-          activeTag.id !== 'Tudo' ? `&search=${search}` : `?search=${search}`
-      }
-      const response = await fetch(url)
-      const data = await response.json()
-      // console.log(data)
-      setBooksPage(data)
-    })()
-  }, [activeTag, search])
+  }, [search])
+
+  const fetcher = (url: string) => fetch(url).then((r) => r.json())
+
+  let url = '/api/books/load'
+
+  if (activeTag.id !== 'Tudo') {
+    url += `?tag=${activeTag.id}`
+  }
+  if (search) {
+    url += activeTag.id !== 'Tudo' ? `&search=${search}` : `?search=${search}`
+  }
+
+  const { data: booksPage } = useSWR<Book[]>(url, fetcher)
+
   return (
-    <Container>
-      <Sidebar />
-      <MainContainer>
-        <MainContent>
-          <HeaderContainer>
-            <TitleContainer>
-              <Binoculars size={32} />
-              <h1>Explorar</h1>
-            </TitleContainer>
-            <SearchInput>
-              <input
-                type="text"
-                placeholder="Busque por livro ou autor"
-                value={search}
-                onChange={handleSearch}
-              />
-              <MagnifyingGlass size={24} />
-            </SearchInput>
-          </HeaderContainer>
-          <ActiveTagList
-            tags={tags}
-            activeTagId={activeTag.id}
-            handleActiveTag={handleActiveTag}
-          />
-          <CardGridContainer>
-            {booksPage.map((book) => (
-              <MiniCard
-                key={book.id}
-                handleClick={() => handleBookDetail(book.id)}
-                book={{
-                  title: book.title,
-                  author: book.author,
-                  image_url: book.image_url,
-                }}
-                rating={book.rating}
-              />
-            ))}
-          </CardGridContainer>
-        </MainContent>
-      </MainContainer>
-      <ModalBookDetail
-        bookId={bookDetailId}
-        isOpen={modalIsOpen}
-        handleClose={() => setModalIsOpen(false)}
-      />
-    </Container>
+    <SWRConfig value={{ fallback }}>
+      <Container>
+        <Sidebar />
+        <MainContainer>
+          <MainContent>
+            <HeaderContainer>
+              <TitleContainer>
+                <Binoculars size={32} />
+                <h1>Explorar</h1>
+              </TitleContainer>
+              <SearchInput>
+                <input
+                  type="text"
+                  placeholder="Busque por livro ou autor"
+                  value={search}
+                  onChange={handleSearch}
+                />
+                <MagnifyingGlass size={24} />
+              </SearchInput>
+            </HeaderContainer>
+            <ActiveTagList
+              tags={tags}
+              activeTagId={activeTag.id}
+              handleActiveTag={handleActiveTag}
+            />
+            <CardGridContainer>
+              {showData &&
+                booksPage?.map((book) => (
+                  <MiniCard
+                    key={book.id}
+                    handleClick={() => handleBookDetail(book.id)}
+                    book={{
+                      title: book.title,
+                      author: book.author,
+                      image_url: book.image_url,
+                    }}
+                    rating={book.rating}
+                  />
+                ))}
+            </CardGridContainer>
+          </MainContent>
+        </MainContainer>
+        <ModalBookDetail
+          bookId={bookDetailId}
+          isOpen={modalIsOpen}
+          handleClose={() => setModalIsOpen(false)}
+        />
+      </Container>
+    </SWRConfig>
   )
 }
 
@@ -141,8 +156,10 @@ export async function getStaticProps() {
   const tags = [{ id: 'Tudo', name: 'Tudo' }, ...categories]
   return {
     props: {
+      fallback: {
+        '/api/books/load': books,
+      },
       tags,
-      books,
       activeTagId,
     },
     revalidate: 60, // 1 minute

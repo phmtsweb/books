@@ -11,9 +11,11 @@ import {
   UserInfoContainer,
 } from './styles'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 type CardProps = {
   user: {
+    id: string
     name: string
     avatar_url: string
   }
@@ -28,10 +30,15 @@ type CardProps = {
 }
 
 export function Card({ user, book, rating, createdAt }: CardProps) {
+  const router = useRouter()
+
+  function handleProfileDetail(userId: string) {
+    router.push(`/perfil/${userId}`)
+  }
   return (
     <Container>
       <Header>
-        <UserInfoContainer>
+        <UserInfoContainer onClick={() => handleProfileDetail(user.id)}>
           <Avatar url={user.avatar_url} size="medium" />
           <div>
             <span>{user.name}</span>

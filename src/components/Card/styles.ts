@@ -20,6 +20,7 @@ export const Header = styled('header', {
 export const UserInfoContainer = styled('div', {
   display: 'flex',
   gap: '$4',
+  cursor: 'pointer',
   div: {
     display: 'flex',
     flexDirection: 'column',

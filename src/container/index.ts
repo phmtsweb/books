@@ -10,6 +10,8 @@ import { LoadBooksUseCase } from '@/services/books/LoadBooksUseCase'
 import { BookPrismaRepository } from '@/repositories/books/implementations/prisma'
 import { LoadBookByIdUseCase } from '@/services/books/LoadBookByIdUseCase'
 import { CreateRatingUseCase } from '@/services/ratings/CreateRatingUseCase'
+import { LoadByUserIdUseCase } from '@/services/ratings/LoadByUserIdUseCase'
+import { GetUserByIdUseCase } from '@/services/users/GetUserByIdUseCase'
 
 const userRepositoryByPrisma = new UserRepositoryByPrisma()
 const ratingRepositoryByPrisma = new RatingPrismaRepository()
@@ -53,5 +55,15 @@ Container.registerSingleton(
     bookRepositoryByPrisma,
     userRepositoryByPrisma,
   ),
+)
+
+Container.registerSingleton(
+  LoadByUserIdUseCase.containerKey,
+  new LoadByUserIdUseCase(ratingRepositoryByPrisma),
+)
+
+Container.registerSingleton(
+  GetUserByIdUseCase.containerKey,
+  new GetUserByIdUseCase(userRepositoryByPrisma),
 )
 export { Container }
